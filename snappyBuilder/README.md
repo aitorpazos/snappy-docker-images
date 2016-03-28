@@ -21,6 +21,6 @@ To run this image, you should adjust the USER_UID environment variable and set t
 
 Example:
 ```
-docker run -e USER_UID=1000 -v <volume_path>:/work ubuntu-snappy-builder
+docker run -e USER_UID=1000 -v <volume_path>:/work aitorpazos/ubuntu-snappy-builder
 ```
 
