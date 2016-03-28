@@ -1,0 +1,43 @@
+#!/bin/bash
+
+
+export GOPATH=/home/juju
+export PATH="$PATH:$GOPATH/bin"
+export CGO_ENABLED=1
+export JUJU_FOLDER=${JUJU_ARCH}
+
+export GO_COMMAND="go";
+
+# Download dependecies before setting env
+# for cross compiling
+${GO_COMMAND} get -d -v ${JUJU_CMD}
+${GO_COMMAND} get launchpad.net/godeps
+cd ${GOPATH}/src/${JUJU_BASE}/ 
+sudo -E godeps -u dependencies.tsv
+
+# Supported JUJU_ARCH: 386 amd64 armhf arm64
+case ${JUJU_ARCH} in
+	386)
+		export GOARCH=386 GO386=sse2 CC=gcc-5
+		;;
+	amd64)
+		export GOARCH=amd64 CC=gcc-5
+		;;
+	armhf)
+		export GOARCH=arm GOARM=${JUJU_ARM_VER}  CC=arm-linux-gnueabihf-gcc-5
+		export JUJU_FOLDER=${JUJU_FOLDER}${JUJU_ARM_VER}
+		;;
+	arm64)
+		export GOARCH=arm64 CC=aarch64-linux-gnu-gcc-5 
+		;;
+	*)
+	echo "JUJU_ARCH ${JUJU_ARCH} not supported"
+	exit 1
+		;;
+esac
+
+cd /work
+${GO_COMMAND} build -o ${JUJU_FOLDER}/jujud ${JUJU_BASE}/cmd/jujud
+${GO_COMMAND} build -o ${JUJU_FOLDER}/juju ${JUJU_BASE}/cmd/juju
+${GO_COMMAND} build -o ${JUJU_FOLDER}/juju-metadata ${JUJU_BASE}/cmd/plugins/juju-metadata
+

@@ -1,0 +1,2 @@
+Defaults   !authenticate
+juju ALL=(ALL) ALL
