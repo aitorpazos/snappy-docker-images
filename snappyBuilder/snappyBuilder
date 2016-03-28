@@ -1,0 +1,40 @@
+#!/bin/bash
+
+
+export GOPATH=/home/snappy
+export PATH="$PATH:$GOPATH/bin"
+export CGO_ENABLED=1
+export SNAPPY_BIN=snappy_${SNAPPY_ARCH}
+
+export GO_COMMAND="go";
+
+# Download dependecies before setting env
+# for cross compiling
+${GO_COMMAND} get -d -v ${SNAPPY_CMD}
+cd ${GOPATH}/src/${SNAPPY_BASE}/ 
+sudo -E ./get-deps.sh
+
+# Supported SNAPPY_ARCH: 386 amd64 armhf arm64
+case ${SNAPPY_ARCH} in
+	386)
+		export GOARCH=386 GO386=sse2 CC=gcc-5
+		;;
+	amd64)
+		export GOARCH=amd64 CC=gcc-5
+		;;
+	armhf)
+		export GOARCH=arm GOARM=${SNAPPY_ARM_VER}  CC=arm-linux-gnueabihf-gcc-5
+		export SNAPPY_BIN=${SNAPPY_BIN}${SNAPPY_ARM_VER}
+		;;
+	arm64)
+		export GOARCH=arm64 CC=aarch64-linux-gnu-gcc-5 
+		;;
+	*)
+	echo "SNAPPY_ARCH ${SNAPPY_ARCH} not supported"
+	exit 1
+		;;
+esac
+
+cd /work
+${GO_COMMAND} build -o ${SNAPPY_BIN} ${SNAPPY_CMD}
+
