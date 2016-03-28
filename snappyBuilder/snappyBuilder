@@ -4,13 +4,13 @@
 export GOPATH=/home/snappy
 export PATH="$PATH:$GOPATH/bin"
 export CGO_ENABLED=1
-export SNAPPY_BIN=snappy_${SNAPPY_ARCH}
+export SNAPPY_DIR=${SNAPPY_ARCH}
 
 export GO_COMMAND="go";
 
 # Download dependecies before setting env
 # for cross compiling
-${GO_COMMAND} get -d -v ${SNAPPY_CMD}
+${GO_COMMAND} get -d -v ${SNAPPY_BASE}/...
 cd ${GOPATH}/src/${SNAPPY_BASE}/ 
 sudo -E ./get-deps.sh
 
@@ -24,7 +24,7 @@ case ${SNAPPY_ARCH} in
 		;;
 	armhf)
 		export GOARCH=arm GOARM=${SNAPPY_ARM_VER}  CC=arm-linux-gnueabihf-gcc-5
-		export SNAPPY_BIN=${SNAPPY_BIN}${SNAPPY_ARM_VER}
+		export SNAPPY_DIR=${SNAPPY_DIR}${SNAPPY_ARM_VER}
 		;;
 	arm64)
 		export GOARCH=arm64 CC=aarch64-linux-gnu-gcc-5 
@@ -36,5 +36,7 @@ case ${SNAPPY_ARCH} in
 esac
 
 cd /work
-${GO_COMMAND} build -o ${SNAPPY_BIN} ${SNAPPY_CMD}
+${GO_COMMAND} build -o ${SNAPPY_DIR}/snap ${SNAPPY_BASE}/cmd/snap
+${GO_COMMAND} build -o ${SNAPPY_DIR}/snapd ${SNAPPY_BASE}/cmd/snapd
+${GO_COMMAND} build -o ${SNAPPY_DIR}/snappy ${SNAPPY_BASE}/cmd/snappy
 

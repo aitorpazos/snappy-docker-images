@@ -25,7 +25,6 @@ VOLUME /work
 WORKDIR /work
 ENV USER_UID 1000
 ENV SNAPPY_BASE github.com/ubuntu-core/snappy 
-ENV SNAPPY_CMD ${SNAPPY_BASE}/cmd/snappy 
 # Supported SNAPPY_ARCH values: 386 amd64 armhf arm64
 ENV SNAPPY_ARCH amd64
 ENV SNAPPY_ARM_VER 7
